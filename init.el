@@ -2,17 +2,27 @@
 
 ;; Add the melpa emacs repo, where most packages are
 (require 'package)
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+
+;; Setting package archives
+(setq package-archives
+'(("GNU ELPA" . "https://elpa.gnu.org/packages/")
+("MELPA Stable" . "https://stable.melpa.org/packages/")
+("MELPA" . "https://melpa.org/packages/"))
+package-archive-priorities
+'(("MELPA Stable" . 10)
+("MELPA" . 5)
+("GNU ELPA" . 2)))
 (package-initialize)
 
 ;; custom startup screen into sicp due to me doing my practice
 (setq inhibit-startup-screen t)
-(setq initial-buffer-choice "~/projects/sicp/chapter2")
+(setq initial-buffer-choice "~/projects")
 
 ;; Ensure package-list has been fetched
 (when (not package-archive-contents)
   (package-refresh-contents))
-  
+(unless package-archive-contents
+  (package-refresh-contents))
 ;; We want to use use-package, not the default emacs behavior
 (setq package-enable-at-startup nil)
 
@@ -85,17 +95,42 @@
 (setq show-paren-delay 0)
 
 ;; Allows moving through wrapped lines as they appear
-(setq line-move-visual t) 
+(setq line-move-visual t)
+
+;; lsp-mode setup
+(use-package lsp-mode
+  :ensure t
+  :hook (python-mode . lsp)
+  :commands lsp)
+;; lsp-pyright setup
+(use-package lsp-pyright
+  :ensure t
+  :hook (python-mode . (lambda ()
+(require 'lsp-pyright)
+(lsp)))
+  :config
+  (setq lsp-keymap-prefix "C-c l")
+  )
+
+;;pyvenv setup
+(use-package pyvenv
+  :ensure t
+  :config
+  ;; Set the default venv directory
+  (setq pyvenv-workon ".venv")
+  (pyvenv-mode 1))
+
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(rainbow-delimiters paredit company flycheck racket-mode smex magit geiser-racket geiser-mit)))
+   '(lsp-mode rainbow-delimiters paredit company flycheck racket-mode smex magit geiser-racket geiser-mit)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
-)
+ )
