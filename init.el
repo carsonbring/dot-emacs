@@ -1,4 +1,7 @@
 ;; -*- lexical-binding: t -*-
+;;; Custom Keymaps
+(global-set-key (kbd "C-c i") 'insert-parentheses)
+
 
 ;; Add the melpa emacs repo, where most packages are
 (require 'package)
